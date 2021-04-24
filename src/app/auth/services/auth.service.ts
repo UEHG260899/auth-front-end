@@ -42,10 +42,16 @@ export class AuthService {
               );
   }
 
-  validarToken() {
+  validarToken(): Observable<boolean> {
     const url = `${this._baseURL}/auth/renew`;
     const  headers = new HttpHeaders()
             .set('x-token', localStorage.getItem('token') || ''); 
-    return this._http.get(url, {headers});
+    return this._http.get<AuthResponse>(url, {headers})
+                .pipe(
+                  map(resp => {
+                    return resp.ok;
+                  }),
+                  catchError(err => of(false))
+                );
   }
 }
